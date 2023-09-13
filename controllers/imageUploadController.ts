@@ -27,7 +27,6 @@ router.post(
     // Handle the uploaded file
     const url = process.cwd() + "/" + req.file?.path;
     // regsiter new user
-
     const imageUrl = await new ImageUpload({
       imageurl: url,
     });
@@ -54,9 +53,9 @@ router.get("/images", async (req, res) => {
 
 // Delete Single Image
 router.delete("/image/:id", async (req, res) => {
-  const id = req.params.id;
+  const { id } = req.params;
   try {
-    const result = await ImageUpload.findByIdAndDelete(id);
+    await ImageUpload.findByIdAndDelete(id);
     res.send({
       status: "success",
       message: "Image Deleted",

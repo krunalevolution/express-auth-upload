@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-// Importing User Model
+// User Model
 import UserModel from "../models/user";
 
 // Check User Authenticate
@@ -18,14 +18,16 @@ const checkUserAuth = async (req: any, res: any, next: any) => {
 
       next();
     } else {
-      res.send({
-        status: "failed",
-        message: "Unauthorized User, Token Not Found!",
-      });
+      res
+        .status(401)
+        .send({ status: "failed", message: "Token Is Not Valid!" });
     }
   } catch (error) {
     console.log(error);
-    res.status(401).send({ status: "failed", message: "Token Is Not Valid!" });
+    res.send({
+      status: "failed",
+      message: "Unauthorized User, Token Not Found!",
+    });
   }
 };
 

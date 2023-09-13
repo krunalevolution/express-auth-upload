@@ -4,6 +4,12 @@ import express, { Request, Response } from "express";
 import UserModel from "../models/user";
 import checkUserAuth from "../middlewares/authMiddleware";
 
+// random string
+import randString from "../utils/randstringgenerate";
+
+// send mailer
+import sendMail from "../config/mailConfig";
+
 const router = express.Router();
 
 // User Registration
@@ -21,16 +27,23 @@ router.post("/register", async (req: Request, res: Response) => {
         try {
           const salt = await bcrypt.genSalt(12);
           const hashPassword = await bcrypt.hash(password, salt);
+          const uniqueString = randString();
+          const isVerified = false;
 
-          // regsiter new user
+          // register new user
           const user = await new UserModel({
             name: name,
             email: email,
             password: hashPassword,
+            uniquestring: uniqueString,
+            isverified: isVerified,
           });
           await user.save();
 
-          //   generating token
+          // sending mail to registered user
+          sendMail(email, uniqueString);
+
+          // generating JWT token
           const token = jwt.sign(
             { userID: user._id },
             `${process.env.JWT_SECRET_KEY}`,
@@ -64,7 +77,6 @@ router.post("/register", async (req: Request, res: Response) => {
 });
 
 // User Login
-
 router.post("/login", checkUserAuth, async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
@@ -100,6 +112,27 @@ router.post("/login", checkUserAuth, async (req: Request, res: Response) => {
     res.send({
       status: "failed",
       message: "Something went wront with login!",
+    });
+  }
+});
+
+// User verifiy via email
+
+router.get("/verify/:id", async (req: Request, res: Response) => {
+  const uniqueString = req.params.id;
+  const user = await UserModel.findOne({ uniquestring: uniqueString });
+
+  if (user) {
+    user.isverified = true;
+    await user.save();
+    res.send({
+      status: "success",
+      message: "User Verified!",
+    });
+  } else {
+    res.send({
+      status: "failed",
+      message: "Failed to verify user!",
     });
   }
 });
