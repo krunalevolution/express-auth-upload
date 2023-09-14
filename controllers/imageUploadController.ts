@@ -26,7 +26,7 @@ router.post(
   async (req: Request, res: Response) => {
     // Handle the uploaded file
     const url = process.cwd() + "/" + req.file?.path;
-    // regsiter new user
+    // register new user
     const imageUrl = await new ImageUpload({
       imageurl: url,
     });

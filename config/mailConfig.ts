@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-const PORT = process.env.PORT as string;
+const PORT = process.env.PORT;
 
 const sendMail = async (email: string, uniqueString: string) => {
   let testAccount = await nodemailer.createTestAccount();
@@ -19,7 +19,7 @@ const sendMail = async (email: string, uniqueString: string) => {
     from: '"Demo Express 👻" <foo@example.com>', // sender address
     to: "bar@example.com, baz@example.com", // list of receivers
     subject: "Verify Account ✔", // Subject line
-    html: `Please click <a href=http://localhost:${PORT}/api/user/verify/${uniqueString}> here </a> to verify your email. Thanks.`, // html body
+    html: `Please click <a href=http://localhost:4000/api/user/verify/${uniqueString}> here </a> to verify your email. Link will expire in 15 minutes Thanks.`, // html body
   });
 
   console.log("Message sent: %s", info.messageId);

@@ -30,6 +30,9 @@ router.post("/register", async (req: Request, res: Response) => {
           const uniqueString = randString();
           const isVerified = false;
 
+          // current date and time
+          const verifyTime = new Date();
+
           // register new user
           const user = await new UserModel({
             name: name,
@@ -37,6 +40,7 @@ router.post("/register", async (req: Request, res: Response) => {
             password: hashPassword,
             uniquestring: uniqueString,
             isverified: isVerified,
+            verificationtime: verifyTime,
           });
           await user.save();
 
@@ -123,12 +127,24 @@ router.get("/verify/:id", async (req: Request, res: Response) => {
   const user = await UserModel.findOne({ uniquestring: uniqueString });
 
   if (user) {
-    user.isverified = true;
-    await user.save();
-    res.send({
-      status: "success",
-      message: "User Verified!",
-    });
+    // verification link expires logic
+    const storedTime = user.verificationtime as any;
+    const currentTime = new Date() as any;
+    const timeDiffMinutes = Math.round((currentTime - storedTime) / 1000 / 60);
+
+    if (timeDiffMinutes <= 15) {
+      user.isverified = true;
+      await user.save();
+      res.send({
+        status: "success",
+        message: "User Verified!",
+      });
+    } else {
+      res.send({
+        status: "failed",
+        message: "Verification link expired!",
+      });
+    }
   } else {
     res.send({
       status: "failed",
