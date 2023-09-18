@@ -81,7 +81,7 @@ router.post("/register", async (req: Request, res: Response) => {
 });
 
 // User Login
-router.post("/login", checkUserAuth, async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     if (email && password) {

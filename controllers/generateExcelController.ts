@@ -2,13 +2,14 @@ import express, { Request, Response } from "express";
 import UserModel from "../models/user";
 
 // export function
-import exportExcelFile from "../config/exportExcelFile";
+import exportExcelFile from "../utils/exportExcelFile";
+import checkUserAuth from "../middlewares/authMiddleware";
 
 const router = express.Router();
 
 // Export excel of verified users
 
-router.get("/exportcsv", async (req: Request, res: Response) => {
+router.get("/exportcsv", checkUserAuth, async (req: Request, res: Response) => {
   try {
     const user = await UserModel.find({ isverified: true });
     exportExcelFile(user);

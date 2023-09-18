@@ -7,8 +7,6 @@ type Users = {
 };
 
 const exportExcelFile = async (data: Users[]) => {
-  //   console.log("Call");
-
   const workbook = new Excel.Workbook();
   const sheet = workbook.addWorksheet("Verified Users");
 
